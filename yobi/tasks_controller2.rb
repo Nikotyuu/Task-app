@@ -1,4 +1,5 @@
 class TasksController < ApplicationController
+  protect_from_forgery
   
   before_action :set_user
   before_action :set_task, only: %i(show edit update destroy)
@@ -17,12 +18,13 @@ class TasksController < ApplicationController
   end
   
   def create
-    @task = @user.tasks.new(task_params)
+    @task = @user.tasks.build(task_params)
     if @task.save
       flash[:success] = "タスクを新規作成しました。"
-      redirect_to user_tasks_url @user
+      redirect_to user_task_url @user 
     else
       render :new
+      render json: @task.errors, status: :unprocessable_entity
     end
   end
 
